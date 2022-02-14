@@ -1,0 +1,24 @@
+.Play {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  .Player {
+    display: flex;
+    min-width: 250px;
+    flex-direction: column;
+    gap: 20px 10px;
+  }
+  .PlayZone {
+    display: flex;
+    flex-flow: column wrap;
+    .Cards{
+      display: flex;
+      flex-flow: row wrap;
+      max-width: 100%;
+      gap:2em 2em;
+      align-items:center;
+      align-content:space-around;
+      justify-content: center;
+    }
+  }
+}

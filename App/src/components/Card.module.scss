@@ -1,0 +1,25 @@
+@import "@fluentui/react/dist/sass/References";
+
+.card {
+  @include ms-depth-8;
+  width: 7em;
+  min-width: 7em;
+  height: 11em;
+  min-height: 11em;
+  gap:20px;
+  cursor: pointer;
+  &.selected {
+    background-color: #999;
+  }
+  .innerCard {
+    height: 10em;
+    min-height: 10em;
+    border: 0.3em solid #0078d7;
+    border-radius: 1em;
+    margin: 0.4em 0.6em;
+    span {
+      line-height: 2.5em;
+      font-size: 4em;
+    }
+  }
+}

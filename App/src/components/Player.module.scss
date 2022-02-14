@@ -1,0 +1,16 @@
+@import "@fluentui/react/dist/sass/References";
+
+.player {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+  @include ms-depth-8;
+  
+  &>div{
+    display: flex;
+    flex-direction: row; 
+    justify-content:start;
+    align-items: baseline;
+  }
+}

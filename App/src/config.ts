@@ -1,7 +1,7 @@
 import { AzureClientProps, AzureFunctionTokenProvider, LOCAL_MODE_TENANT_ID } from "@fluidframework/azure-client";
 import { InsecureTokenProvider } from "@fluidframework/test-client-utils";
 
-export const useAzure = false;
+export const useAzure = true;
 
 
 

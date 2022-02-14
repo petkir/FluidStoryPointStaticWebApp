@@ -6,7 +6,7 @@ import { AzureClient, AzureMember, IAzureAudience } from "@fluidframework/azure-
 import { getConnectionConfig } from "../config";
 import { ICurrentUser } from "../interfaces/ICurrentUser";
 import { IPlayer } from "../interfaces/IPlayer";
-import { selectProperties } from "@fluentui/react";
+
 
 
 

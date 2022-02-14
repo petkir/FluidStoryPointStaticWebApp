@@ -1,5 +1,5 @@
 import styles from './Play.module.scss';
-import React, { useEffect } from "react";
+import React from "react";
 import { Card } from '../components/Card';
 import { Player } from '../components/Player';
 import { useParams } from "react-router-dom";

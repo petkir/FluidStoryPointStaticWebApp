@@ -1,6 +1,6 @@
-import { IMember } from "fluid-framework";
 
-export interface IUser{
+
+export interface ICurrentUser{
     id:string;
     name:string;
     

@@ -3,13 +3,10 @@ import { InsecureTokenProvider } from "@fluidframework/test-client-utils";
 
 export const useAzure = true;
 
-export const userConfig = {
-    id: "1",
-    name: "1445",
-};
 
 
-export function getconnectionConfig(userId: string, userName: string): AzureClientProps {
+
+export function getConnectionConfig(userId: string, userName: string): AzureClientProps {
     if (useAzure) {
         return ({
             connection: {
@@ -26,6 +23,7 @@ export function getconnectionConfig(userId: string, userName: string): AzureClie
             tenantId: LOCAL_MODE_TENANT_ID,
             tokenProvider: new InsecureTokenProvider("fooBar", {
                 id:userId,
+                
             }),
             orderer: "http://localhost:7070",
             storage: "http://localhost:7070",

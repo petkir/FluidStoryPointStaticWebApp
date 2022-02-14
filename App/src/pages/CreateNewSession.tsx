@@ -3,7 +3,7 @@ import { Placeholder } from "../components/Placeholder";
 import { stringToHash } from "../functions/stringToHash";
 import { createStorageContainer } from "../hocks/useFluidService";
 import { useLocalStorage } from "../hocks/useLocalStorage";
-import { IUser } from "../interfaces/ICurrentUser";
+import { ICurrentUser } from "../interfaces/ICurrentUser";
 
 export interface CreateNewSessionProps { }
 
@@ -18,12 +18,12 @@ export function CreateNewSession(props: CreateNewSessionProps) {
                 buttonLabel="Create Session"
                 onButtonPressed={((username) => { 
                     const userId=stringToHash(username+(new Date().toISOString()));
-                    const cuser:IUser={
+                    const cuser:ICurrentUser={
                         name:username,
                         id: userId.toString()
                     }
                     setUser(cuser);
-                    createStorageContainer(cuser.id).then((containerId:string) =>{
+                    createStorageContainer(cuser).then((containerId:string) =>{
                         navigate(`/play/${containerId}`);
                     })
                 })}

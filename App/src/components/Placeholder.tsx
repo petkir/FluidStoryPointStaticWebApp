@@ -1,6 +1,6 @@
 import styles from './Placeholder.module.scss';
 import { Icon, PrimaryButton, TextField } from '@fluentui/react'
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export interface PlaceholderProps {
     icontext: string;
@@ -8,10 +8,16 @@ export interface PlaceholderProps {
     buttonLabel: string;
     onButtonPressed?: (user: string) => void;
     children?: any;
+    username?:string;
 }
 
 export function Placeholder(props: PlaceholderProps) {
     const [username, setUsername] = React.useState('');
+    useEffect(()=>{
+        if(props.username){
+            setUsername(props.username);
+        }
+    },[props.username])
     return (
         <div className={`${styles.placeholder}`} >
             <div className={styles.placeholderContainer}>

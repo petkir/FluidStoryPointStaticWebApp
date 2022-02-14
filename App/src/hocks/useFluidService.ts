@@ -18,12 +18,12 @@ export function getClient(user: ICurrentUser): AzureClient {
     if (!client) {
         client = new AzureClient(getConnectionConfig(user.id, user.name));
     }
-    return client ;
+    return client;
 }
 
 export async function createStorageContainer(user: ICurrentUser): Promise<string> {
     let container;
-    
+
     ({ container } = await getClient(user).createContainer(containerSchema));
     (container.initialObjects.storypointPokerMap as SharedMap).set("ownerId", user.id);
 
@@ -47,7 +47,7 @@ export const getAudience = async (containerId: string, user: ICurrentUser): Prom
 export const useFluidService = (containerId: string, user: ICurrentUser) => {
     const [fluidMap, setFluidMap] = useState<SharedMap | undefined>(undefined);
     const [audience, setAudience] = useState<IAzureAudience | undefined>(undefined);
-    const [gameData, setGameData] = useState<IGameInfo | undefined>(undefined);
+    const [gameData, setGameData] = useState<IGameInfo>({} as IGameInfo);
 
     const dataRef = useRef(gameData);
     useEffect(() => {
@@ -57,7 +57,7 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
                 setFluidMap(value);
             });
         });
-    }, [containerId,user]);
+    }, [containerId, user]);
 
 
 

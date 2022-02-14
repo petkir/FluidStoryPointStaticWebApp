@@ -21,7 +21,7 @@ export function Player(props: PlayerProps) {
             />
             <div>{props.isMe && <Icon iconName='FavoriteStar'/>} {props.name} {props.isOwner && <Icon iconName='Crown'/>}</div>
             </div>
-            {props.selectedValue ?
+            {typeof(props.selectedValue) !== "undefined" ?
                 <Icon iconName='CheckboxCompositeReversed' color='green' />
                 : <Icon iconName='Checkbox' />
             }

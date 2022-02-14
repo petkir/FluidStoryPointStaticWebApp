@@ -16,6 +16,7 @@ export function CreateNewSession(props: CreateNewSessionProps) {
                 icontext="Welcome to"
                 description="Please fill your user"
                 buttonLabel="Create Session"
+                username={user?.name}
                 onButtonPressed={((username) => { 
                     const userId=stringToHash(username+(new Date().toISOString()));
                     const cuser:ICurrentUser={

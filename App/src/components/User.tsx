@@ -1,4 +1,4 @@
-import styles from './User.module.scss';
+//import styles from './User.module.scss';
 import React from "react";
 
 import { Facepile, PersonaSize } from '@fluentui/react';
@@ -7,7 +7,7 @@ import { useLocalStorage } from '../hocks/useLocalStorage';
 
 
 export function User(){
-const [user, setuser] = useLocalStorage("user", undefined);
+const [user] = useLocalStorage("user", undefined);
 return (<div>
     {user ?
         <div>

@@ -6,6 +6,8 @@ import { AzureClient, AzureMember, IAzureAudience } from "@fluidframework/azure-
 import { getConnectionConfig } from "../config";
 import { ICurrentUser } from "../interfaces/ICurrentUser";
 import { IPlayer } from "../interfaces/IPlayer";
+import { selectProperties } from "@fluentui/react";
+
 
 
 let client: AzureClient | undefined = undefined;
@@ -43,6 +45,7 @@ export const getAudience = async (containerId: string, user: ICurrentUser): Prom
     return services.audience;
 }
 
+const valueKey: string = "valkey";
 
 export const useFluidService = (containerId: string, user: ICurrentUser) => {
     const [fluidMap, setFluidMap] = useState<SharedMap | undefined>(undefined);
@@ -71,12 +74,14 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
             //
         }
         const init = () => {
+            debugger;
             const members = audience?.getMembers();
             const playerInfo: IPlayer[] = [];
-            members?.forEach((m: AzureMember<ICurrentUser>) => {
+
+            members?.forEach((m: any) => {
                 playerInfo.push({
                     id: m.userId,
-                    name: m.userName,
+                    name: m.userName ? m.userName : "No Username Set",
                 });
             });
             if (dataRef.current) {
@@ -108,21 +113,52 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
     useEffect(() => {
 
         const syncView = (changed: IValueChanged, local: boolean, target: SharedMap) => {
+            const clone = dataRef.current ? { ...dataRef.current } : { showResult: false, players: [] };
+            clone.players = dataRef.current.players.slice();
+            if (fluidMap && changed.key === "showResult") {
+                clone.showResult = fluidMap.get(changed.key) as boolean;
+                if (local && !clone.showResult) {
+                    //Reset all
+                    const keysToReset = Array.from(fluidMap.keys()).filter(k => k.startsWith(valueKey));
+                    keysToReset.forEach(element => {
+                        fluidMap.set(element, undefined);
+                    });
+
+                }
+            }
+            if (fluidMap && changed.key.startsWith(valueKey)) {
+                var playerid = changed.key.substring(valueKey.length);
+                var value = fluidMap.get(changed.key) as number;
+                const index = clone.players.findIndex(v => v.id === playerid);
+                if (index !== -1) {
+                    clone.players[index].selectedValue = value;
+                } else {
+                    clone.players.push({ id: playerid,name:"dyngen", selectedValue: value });
+                }
+            }
+            dataRef.current = clone;
+            setGameData(clone);
 
         }
         (fluidMap as SharedMap)?.on("valueChanged", syncView);
         return () => { (fluidMap as SharedMap)?.off("valueChanged", syncView) }
 
-    }, [fluidMap]);
+    }, [fluidMap, setGameData]);
 
-    const setSelectedValue = (userId: string, value: number): void => {
-        //todo
+    function setSelectedValue(userId: string, value: number): void {
+        if (fluidMap) {
+            fluidMap.set(valueKey + userId, value);
+        }
     }
-    const toggleState = () => {
-        (fluidMap as SharedMap).set('showResult', !gameData?.showResult)
+    function toggleState(): void {
+        if (gameData) {
+            const current = gameData.showResult;
+            debugger;
+            (fluidMap as SharedMap).set('showResult', !current);
+        }
     }
 
 
 
-    return [gameData, setSelectedValue, toggleState];
+    return { gameData, setGameData, setSelectedValue, toggleState };
 };

@@ -1,6 +1,6 @@
-import styles from './Join.module.scss';
+//import styles from './Join.module.scss';
 import React from "react";
-import { Routes, Route, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useLocalStorage } from '../hocks/useLocalStorage';
 import { Placeholder } from '../components/Placeholder';
 import { ICurrentUser } from '../interfaces/ICurrentUser';
@@ -26,6 +26,7 @@ export function Join(props: JoinProps) {
             buttonLabel="Join Session"
             username={user?.name}
             onButtonPressed={((username) => {
+                debugger;
                 if (username === user?.name) {
                     //same user no update
                     setUser(user);
@@ -37,7 +38,10 @@ export function Join(props: JoinProps) {
                     }
                     setUser(cuser);
                 }
-                navigate(`/play/${params.sessionId}`);
+                setTimeout(() => {
+                    navigate(`/play/${params.sessionId}`);
+                },100)
+                
 
             })}
         />

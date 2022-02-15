@@ -1,21 +1,17 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { IUser, ScopeType } from "@fluidframework/azure-client";
 import { generateToken } from "@fluidframework/azure-service-utils";
-const { SecretClient } = require("@azure/keyvault-secrets");
-const { DefaultAzureCredential } = require("@azure/identity");
+
 
 export interface IUserData extends IUser {
     name: string;
 }
 
-const key = "ADCDFluidRelay"
+const key = "FRSKey"
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    // tenantId, documentId, userId and userName are required parameters
     const tenantId = (req.query.tenantId || (req.body && req.body.tenantId)) as string;
-    const documentId = (req.query.documentId || (req.body && req.body.documentId)) as string;
     const userId = (req.query.userId || (req.body && req.body.userId)) as string;
     const userName = (req.query.userName || (req.body && req.body.userName)) as string;
-    const scopes = (req.query.scopes || (req.body && req.body.scopes)) as ScopeType[];
 
     if (!tenantId) {
         context.res = {
@@ -25,21 +21,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         return;
     }
 
-    if (!key) {
-        context.res = {
-            status: 404,
-            body: `No key found for the provided tenantId: ${tenantId}`,
-        };
-        return;
-    }
+   
 
-    if (!documentId) {
-        context.res = {
-            status: 400,
-            body: "No documentId provided in query params"
-        };
-        return;
-    }
 /*
     const credential = new DefaultAzureCredential();
     const keyVaultName = process.env["KEY_VAULT_NAME"]
@@ -48,15 +31,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const client = new SecretClient(url, credential);
     const secret = await client.getSecret(key);
     */
-    const secret = process.env["FRSKey"]
+    const secret = process.env[key]
 
     let user: IUserData = { id: userId, name: userName, };
 
-    // Will generate the token and returned by an ITokenProvider implementation to use with the AzureClient.
     const token = generateToken(
         tenantId,
         secret,
-        scopes ?? [ScopeType.DocRead, ScopeType.DocWrite, ScopeType.SummaryWrite],
+        [ScopeType.DocRead, ScopeType.DocWrite, ScopeType.SummaryWrite],
         user as any
     );
 

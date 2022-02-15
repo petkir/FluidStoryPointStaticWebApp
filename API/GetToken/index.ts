@@ -1,12 +1,14 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { IUser, ScopeType } from "@fluidframework/azure-client";
 import { generateToken } from "@fluidframework/azure-service-utils";
+const { SecretClient } = require("@azure/keyvault-secrets");
+const { DefaultAzureCredential } = require("@azure/identity");
 
-export interface IUserData extends IUser{
-    name:string;
+export interface IUserData extends IUser {
+    name: string;
 }
 
-const key="movetoKeyVault"
+const key = "ADCDFluidRelay"
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     // tenantId, documentId, userId and userName are required parameters
     const tenantId = (req.query.tenantId || (req.body && req.body.tenantId)) as string;
@@ -38,13 +40,22 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         };
         return;
     }
+/*
+    const credential = new DefaultAzureCredential();
+    const keyVaultName = process.env["KEY_VAULT_NAME"]
+    const url = "https://" + keyVaultName + ".vault.azure.net";
 
-    let user:IUserData = {  id: userId ,name: userName,};
+    const client = new SecretClient(url, credential);
+    const secret = await client.getSecret(key);
+    */
+    const secret = process.env["FRSKey"]
+
+    let user: IUserData = { id: userId, name: userName, };
 
     // Will generate the token and returned by an ITokenProvider implementation to use with the AzureClient.
     const token = generateToken(
         tenantId,
-        key,
+        secret,
         scopes ?? [ScopeType.DocRead, ScopeType.DocWrite, ScopeType.SummaryWrite],
         user as any
     );

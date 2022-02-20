@@ -12,6 +12,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const tenantId = (req.query.tenantId || (req.body && req.body.tenantId)) as string;
     const userId = (req.query.userId || (req.body && req.body.userId)) as string;
     const userName = (req.query.userName || (req.body && req.body.userName)) as string;
+    const documentId = (req.query.documentId || (req.body && req.body.documentId)) as string;
 
     if (!tenantId) {
         context.res = {
@@ -20,7 +21,13 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         };
         return;
     }
-
+    if (!documentId) {
+        context.res = {
+            status: 400,
+            body: "No documentId provided in query params"
+        };
+        return;
+    }
     const secret = process.env[key];
     if(!secret){
         context.res = {
@@ -37,7 +44,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         tenantId,
         secret,
         [ScopeType.DocRead, ScopeType.DocWrite, ScopeType.SummaryWrite],
-        user as any
+        documentId,
+        user 
     );
 
     context.res = {

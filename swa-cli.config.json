@@ -1,0 +1,13 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Azure/static-web-apps-cli/main/schema/swa-cli.config.schema.json",
+    "configurations": {
+        
+      "app": {
+        "context": "http://localhost:3000",
+        "appLocation": "App",
+        "apiLocation": "API/",
+        "run": "npm run start",
+         "swaConfigLocation": "./staticwebapp.config.json"
+      }
+    }
+  }

@@ -30,6 +30,7 @@ export async function createStorageContainer(user: ICurrentUser): Promise<string
     (container.initialObjects.storypointPokerMap as SharedMap).set("ownerId", user.id);
 
     const id = await container.attach();
+    debugger;
     return id;
 }
 
@@ -68,6 +69,12 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
         const addUser = (clientId: string, member: AzureMember<any>) => {
             if (dataRef.current) {
                 //   dataRef.current.players
+                dataRef.current.players.push({
+                    id: member.userId,
+                    name: member.userName,
+
+                    isOwner: dataRef.current.ownerId === member.userId
+                })
             }
         }
         const removeUser = (clientId: string, member: AzureMember<any>) => {
@@ -89,7 +96,8 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
             } else {
                 dataRef.current = {
                     showResult: false,
-                    players: playerInfo
+                    players: playerInfo,
+                    ownerId:""
                 }
             }
             setGameData(dataRef.current);
@@ -113,8 +121,19 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
     useEffect(() => {
 
         const syncView = (changed: IValueChanged, local: boolean, target: SharedMap) => {
-            const clone = dataRef.current ? { ...dataRef.current } : { showResult: false, players: [] };
+            const clone = dataRef.current ? { ...dataRef.current } : { showResult: false, players: [], ownerId:"" };
             clone.players = dataRef.current.players.slice();
+            if (fluidMap && changed.key === "ownerId") {
+                clone.ownerId = fluidMap.get(changed.key) as string;
+                if (local && !clone.showResult) {
+                    //Reset all
+                    const keysToReset = Array.from(fluidMap.keys()).filter(k => k.startsWith(valueKey));
+                    keysToReset.forEach(element => {
+                        fluidMap.set(element, undefined);
+                    });
+
+                }
+            }
             if (fluidMap && changed.key === "showResult") {
                 clone.showResult = fluidMap.get(changed.key) as boolean;
                 if (local && !clone.showResult) {
@@ -133,7 +152,7 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
                 if (index !== -1) {
                     clone.players[index].selectedValue = value;
                 } else {
-                    clone.players.push({ id: playerid,name:"dyngen", selectedValue: value });
+                    clone.players.push({ id: playerid, name: "dyngen", selectedValue: value });
                 }
             }
             dataRef.current = clone;

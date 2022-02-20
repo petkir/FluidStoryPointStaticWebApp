@@ -21,20 +21,18 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         return;
     }
 
-   
-
-/*
-    const credential = new DefaultAzureCredential();
-    const keyVaultName = process.env["KEY_VAULT_NAME"]
-    const url = "https://" + keyVaultName + ".vault.azure.net";
-
-    const client = new SecretClient(url, credential);
-    const secret = await client.getSecret(key);
-    */
-    const secret = process.env[key]
+    const secret = process.env[key];
+    if(!secret){
+        context.res = {
+            status: 400,
+            body: "No secret provided ",
+        };
+        return;
+    }
+    
 
     let user: IUserData = { id: userId, name: userName, };
-
+    console.log('Ready to generate token');
     const token = generateToken(
         tenantId,
         secret,

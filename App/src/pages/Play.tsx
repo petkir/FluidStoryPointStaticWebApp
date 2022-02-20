@@ -16,7 +16,7 @@ export function Play(props: PlayProps) {
     const [user] = useLocalStorage("user", undefined);
     const { gameData, setSelectedValue, toggleState } = useFluidService(params.sessionId || "invalid", user)
 
-   
+
 
     /* useEffect(() => {
          setSelectedValue(user.id, myselection);
@@ -44,7 +44,9 @@ export function Play(props: PlayProps) {
                 }
                 <div>
                     Invite other use this Link:
-                    {`${window.location.protocol}://${window.location.hostname}:${window.location.port}/join/${params.sessionId}`}
+                    <p>
+                        {`${window.location.protocol}://${window.location.hostname}${window.location.port?':'+window.location.port:''}/join/${params.sessionId}`}
+                    </p>
                 </div>
             </div>
             <div className={styles.PlayZone}>
@@ -62,12 +64,13 @@ export function Play(props: PlayProps) {
                         }
                     </div>
                 }
+                <div>
+                    <DefaultButton
+                        text={gameData.showResult ? 'next Round' : 'Show Result'}
+                        onClick={() => toggleState()} />
+                </div>
             </div>
-            <div>
-                <DefaultButton
-                    text={gameData.showResult ? 'next Round' : 'Show Result'}
-                    onClick={() => toggleState()} />
-            </div>
+
         </div>
     )
 }

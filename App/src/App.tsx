@@ -10,13 +10,18 @@ import { User } from './components/User';
 function App() {
   return (
     <div className="App">
-      
-      <h1>ADCD 2022 Fluid Story Pocker Sample</h1>
-      <User/>
+      <div className="Header">
+        <div>
+          <h1>ADCD 2022 Fluid Story Pocker Sample</h1>
+        </div>
+
+        <User />
+
+      </div>
       <div className="content">
         <Outlet />
       </div>
-   
+
     </div>
   );
 }

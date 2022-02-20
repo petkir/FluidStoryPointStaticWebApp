@@ -8,9 +8,9 @@ import { useLocalStorage } from '../hocks/useLocalStorage';
 
 export function User(){
 const [user] = useLocalStorage("user", undefined);
-return (<div>
+return (<div className="UserContainer">
     {user ?
-        <div>
+        <div className="MyUser">
             <Facepile
                 personaSize={PersonaSize.size32}
                 personas={[{

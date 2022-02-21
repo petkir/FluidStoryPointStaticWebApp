@@ -21,13 +21,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         };
         return;
     }
+    /*
     if (!documentId) {
         context.res = {
             status: 400,
             body: "No documentId provided in query params"
         };
         return;
-    }
+    }*/
     const secret = process.env[key];
     if(!secret){
         context.res = {

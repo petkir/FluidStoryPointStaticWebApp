@@ -26,7 +26,6 @@ export function Join(props: JoinProps) {
             buttonLabel="Join Session"
             username={user?.name}
             onButtonPressed={((username) => {
-                debugger;
                 if (username === user?.name) {
                     //same user no update
                     setUser(user);

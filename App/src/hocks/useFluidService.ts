@@ -2,15 +2,16 @@ import { useState, useEffect, useRef } from "react";
 
 import { IValueChanged, SharedMap } from "fluid-framework";
 import { IGameInfo } from "../interfaces/IGameInfo";
-import { AzureClient, AzureMember, IAzureAudience } from "@fluidframework/azure-client";
+import { AzureClient, AzureMember, IAzureAudience, IUser } from "@fluidframework/azure-client";
 import { getConnectionConfig } from "../config";
 import { ICurrentUser } from "../interfaces/ICurrentUser";
 import { IPlayer } from "../interfaces/IPlayer";
+import { clone } from "lodash";
 
 
 
 
-let client: AzureClient | undefined = undefined;
+let client: AzureClient;
 
 const containerSchema = {
     initialObjects: { storypointPokerMap: SharedMap }
@@ -25,18 +26,17 @@ export function getClient(user: ICurrentUser): AzureClient {
 
 export async function createStorageContainer(user: ICurrentUser): Promise<string> {
     let container;
-
-    ({ container } = await getClient(user).createContainer(containerSchema));
+    getClient(user);
+    ({ container } = await client.createContainer(containerSchema));
     (container.initialObjects.storypointPokerMap as SharedMap).set("ownerId", user.id);
-
     const id = await container.attach();
-    debugger;
     return id;
 }
 
 export const getStorypointPokerMap = async (containerId: string, user: ICurrentUser): Promise<SharedMap> => {
     let container;
-    ({ container } = await getClient(user).getContainer(containerId, containerSchema));
+    getClient(user);
+    ({ container } = await client.getContainer(containerId, containerSchema));
     return container.initialObjects.storypointPokerMap as SharedMap;
 }
 
@@ -68,38 +68,49 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
     useEffect(() => {
         const addUser = (clientId: string, member: AzureMember<any>) => {
             if (dataRef.current) {
-                //   dataRef.current.players
-                dataRef.current.players.push({
-                    id: member.userId,
-                    name: member.userName,
+                const check = dataRef.current.players.filter(x => x.id === member.userId);
+                
+                if (check.length === 0) {
+                    const clonestate =clone(dataRef.current)
+                    clonestate.players.push({
+                        id: member.userId,
+                        name: member.userName,
 
-                    isOwner: dataRef.current.ownerId === member.userId
-                })
+                        isOwner: dataRef.current.ownerId === member.userId
+                    });
+                    console.log('Add User'+dataRef.current.players.length);
+                    dataRef.current=clonestate;
+                    setGameData(clonestate);
+                }
             }
         }
         const removeUser = (clientId: string, member: AzureMember<any>) => {
-            //
+            console.log('remove User');
+
         }
         const init = () => {
-            debugger;
             const members = audience?.getMembers();
             const playerInfo: IPlayer[] = [];
+            if (members && members.size > 0) {
+                for (let i = 0; i < members.size; i++) {
+                    const m = members.get(members.keys().next().value) as AzureMember<IUser>;
+                    playerInfo.push({
+                        id: m.userId,
+                        name: m.userName ? m.userName : "No Username Set",
+                    });
+                }
 
-            members?.forEach((m: any) => {
-                playerInfo.push({
-                    id: m.userId,
-                    name: m.userName ? m.userName : "No Username Set",
-                });
-            });
+            }
             if (dataRef.current) {
                 dataRef.current.players = playerInfo;
             } else {
                 dataRef.current = {
                     showResult: false,
                     players: playerInfo,
-                    ownerId:""
+                    ownerId: ""
                 }
             }
+            console.log('init User'+playerInfo.length);
             setGameData(dataRef.current);
         }
         if (audience) {
@@ -121,7 +132,7 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
     useEffect(() => {
 
         const syncView = (changed: IValueChanged, local: boolean, target: SharedMap) => {
-            const clone = dataRef.current ? { ...dataRef.current } : { showResult: false, players: [], ownerId:"" };
+            const clone = dataRef.current ? { ...dataRef.current } : { showResult: false, players: [], ownerId: "" };
             clone.players = dataRef.current.players.slice();
             if (fluidMap && changed.key === "ownerId") {
                 clone.ownerId = fluidMap.get(changed.key) as string;
@@ -172,7 +183,6 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
     function toggleState(): void {
         if (gameData) {
             const current = gameData.showResult;
-            debugger;
             (fluidMap as SharedMap).set('showResult', !current);
         }
     }

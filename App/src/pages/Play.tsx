@@ -16,13 +16,6 @@ export function Play(props: PlayProps) {
     const [user] = useLocalStorage("user", undefined);
     const { gameData, setSelectedValue, toggleState } = useFluidService(params.sessionId || "invalid", user)
 
-
-
-    /* useEffect(() => {
-         setSelectedValue(user.id, myselection);
-     }, [myselection, user, setSelectedValue])
- 
- */
     const cards = [0, 1, 2, 3, 5, 7, 10, 13, 17, 25, 30];
     const getMySelection = (): number | undefined => {
         if (gameData && gameData.players) {
@@ -45,7 +38,7 @@ export function Play(props: PlayProps) {
                 <div>
                     Invite other use this Link:
                     <p>
-                        {`${window.location.protocol}://${window.location.hostname}${window.location.port?':'+window.location.port:''}/join/${params.sessionId}`}
+                        {`${window.location.protocol}//${window.location.hostname}${window.location.port?':'+window.location.port:''}/join/${params.sessionId}`}
                     </p>
                 </div>
             </div>

@@ -6,7 +6,7 @@ import { AzureClient, AzureMember, IAzureAudience, IUser } from "@fluidframework
 import { getConnectionConfig } from "../config";
 import { ICurrentUser } from "../interfaces/ICurrentUser";
 import { IPlayer } from "../interfaces/IPlayer";
-import { clone } from "lodash";
+import { clone, cloneDeep, findIndex } from "lodash";
 
 
 
@@ -68,24 +68,35 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
     useEffect(() => {
         const addUser = (clientId: string, member: AzureMember<any>) => {
             if (dataRef.current) {
+
                 const check = dataRef.current.players.filter(x => x.id === member.userId);
-                
+
                 if (check.length === 0) {
-                    const clonestate =clone(dataRef.current)
+                    const clonestate = cloneDeep(dataRef.current)
                     clonestate.players.push({
                         id: member.userId,
                         name: member.userName,
 
-                        isOwner: dataRef.current.ownerId === member.userId
+                        isOwner: false
                     });
-                    console.log('Add User'+dataRef.current.players.length);
-                    dataRef.current=clonestate;
+                    console.log('Add User' + dataRef.current.players.length);
+                    dataRef.current = clonestate;
                     setGameData(clonestate);
                 }
             }
         }
         const removeUser = (clientId: string, member: AzureMember<any>) => {
-            console.log('remove User');
+
+            const check = dataRef.current.players.filter(x => x.id === member.userId);
+
+            if (check.length > 0) {
+                console.log('remove User');
+                const clonestate = cloneDeep(dataRef.current);
+                const pos = findIndex(clonestate.players, c => c.id === member.userId);
+                clonestate.players.splice(pos, 1);
+                dataRef.current = clonestate;
+                setGameData(clonestate);
+            }
 
         }
         const init = () => {
@@ -94,12 +105,13 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
             if (members && members.size > 0) {
                 for (let i = 0; i < members.size; i++) {
                     const m = members.get(members.keys().next().value) as AzureMember<IUser>;
-                    playerInfo.push({
-                        id: m.userId,
-                        name: m.userName ? m.userName : "No Username Set",
-                    });
+                    if (playerInfo.filter(x => x.id === m.userId).length === 0) {
+                        playerInfo.push({
+                            id: m.userId,
+                            name: m.userName ? m.userName : "No Username Set",
+                        });
+                    }
                 }
-
             }
             if (dataRef.current) {
                 dataRef.current.players = playerInfo;
@@ -110,7 +122,7 @@ export const useFluidService = (containerId: string, user: ICurrentUser) => {
                     ownerId: ""
                 }
             }
-            console.log('init User'+playerInfo.length);
+            console.log('init User' + playerInfo.length);
             setGameData(dataRef.current);
         }
         if (audience) {

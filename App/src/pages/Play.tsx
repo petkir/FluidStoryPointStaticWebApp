@@ -7,6 +7,8 @@ import { useLocalStorage } from '../hocks/useLocalStorage';
 import { useFluidService } from '../hocks/useFluidService';
 import { IGameInfo } from '../interfaces/IGameInfo';
 import { DefaultButton } from '@fluentui/react';
+import Result from '../components/Result';
+import { chain, groupBy } from 'lodash';
 export interface PlayProps {
 
 }
@@ -26,6 +28,9 @@ export function Play(props: PlayProps) {
         }
         return undefined;
     }
+    const resultvalues = chain(gameData.players).groupBy('selectedValue')
+        .map((value, key) => ({ name: key, count: value.length })).value();
+
     return (
 
         <div className={styles.Play}>
@@ -38,13 +43,13 @@ export function Play(props: PlayProps) {
                 <div>
                     Invite other use this Link:
                     <p>
-                        {`${window.location.protocol}//${window.location.hostname}${window.location.port?':'+window.location.port:''}/join/${params.sessionId}`}
+                        {`${window.location.protocol}//${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}/join/${params.sessionId}`}
                     </p>
                 </div>
             </div>
             <div className={styles.PlayZone}>
                 {(gameData as IGameInfo).showResult ?
-                    <div>Result </div>
+                    <div className={styles.Result}><Result data={resultvalues} /> </div>
                     :
                     <div className={styles.Cards}>
                         {
@@ -57,7 +62,7 @@ export function Play(props: PlayProps) {
                         }
                     </div>
                 }
-                <div>
+                <div className={styles.ToggleBtn}>
                     <DefaultButton
                         text={gameData.showResult ? 'next Round' : 'Show Result'}
                         onClick={() => toggleState()} />

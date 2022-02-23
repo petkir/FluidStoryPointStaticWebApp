@@ -1,6 +1,5 @@
-import { devNull } from 'os';
 import * as React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell } from 'recharts';
 
 export interface IResultProps {
     data: {
@@ -17,7 +16,7 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 const RADIAN = Math.PI / 180;
 
 const renderCustomizedLabel = (props: any) => {
-    const { cx, cy, midAngle, innerRadius, outerRadius, percent,name, index } = props;
+    const { cx, cy, midAngle, innerRadius, outerRadius, percent,name } = props;
     
     const radius = innerRadius + (outerRadius - innerRadius) * 0.2;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);

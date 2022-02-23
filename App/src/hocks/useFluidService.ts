@@ -6,7 +6,7 @@ import { AzureClient, AzureMember, IAzureAudience, IUser } from "@fluidframework
 import { getConnectionConfig } from "../config";
 import { ICurrentUser } from "../interfaces/ICurrentUser";
 import { IPlayer } from "../interfaces/IPlayer";
-import { clone, cloneDeep, findIndex } from "lodash";
+import { cloneDeep, findIndex } from "lodash";
 
 
 
